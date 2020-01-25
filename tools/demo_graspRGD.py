@@ -74,6 +74,8 @@ def vis_detections(ax, image_name, im, class_name, dets, thresh=0.5):
         # plot rotated rectangles
         pts = ar([[bbox[0],bbox[1]], [bbox[2], bbox[1]], [bbox[2], bbox[3]], [bbox[0], bbox[3]]])
         cnt = ar([(bbox[0] + bbox[2])/2, (bbox[1] + bbox[3])/2])
+        cx=(bbox[0] + bbox[2])/2
+        cy=(bbox[1] + bbox[3])/2
         angle = int(class_name[6:])
         r_bbox = Rotate2D(pts, cnt, -pi/2-pi/20*(angle-1))
         pred_label_polygon = Polygon([(r_bbox[0,0],r_bbox[0,1]), (r_bbox[1,0], r_bbox[1,1]), (r_bbox[2,0], r_bbox[2,1]), (r_bbox[3,0], r_bbox[3,1])])
@@ -83,7 +85,7 @@ def vis_detections(ax, image_name, im, class_name, dets, thresh=0.5):
         plt.plot(pred_x[1:3],pred_y[1:3], color='r', alpha = 0.7, linewidth=3, solid_capstyle='round', zorder=2)
         plt.plot(pred_x[2:4],pred_y[2:4], color='k', alpha = 0.7, linewidth=1, solid_capstyle='round', zorder=2)
         plt.plot(pred_x[3:5],pred_y[3:5], color='r', alpha = 0.7, linewidth=3, solid_capstyle='round', zorder=2)
-
+        plt.scatter(cx,cy)
         #ax.text(bbox[0], bbox[1] - 2,
         #        '{:s} {:.3f}'.format(class_name, score),
         #        bbox=dict(facecolor='blue', alpha=0.5),
@@ -115,10 +117,10 @@ def demo(sess, net, image_name):
     timer.tic()
     scores, boxes = im_detect(sess, net, im)
 
-    #scores_max = scores[:,1:-1].max(axis=1)
-    #scores_max_idx = np.argmax(scores_max)
-    #scores = scores[scores_max_idx:scores_max_idx+1,:]
-    #boxes = boxes[scores_max_idx:scores_max_idx+1, :]
+    scores_max = scores[:,1:-1].max(axis=1)
+    scores_max_idx = np.argmax(scores_max)
+    scores = scores[scores_max_idx:scores_max_idx+1,:]
+    boxes = boxes[scores_max_idx:scores_max_idx+1, :]
 
     #im = cv2.imread('/home/fujenchu/projects/deepLearning/tensorflow-finetune-flickr-style-master/data/grasps_ivalab/rgb_cropped320/rgb_0076Cropped320.png')
     timer.toc()
@@ -126,7 +128,7 @@ def demo(sess, net, image_name):
 
     fig, ax = plt.subplots(figsize=(12, 12))
     # Visualize detections for each class
-    CONF_THRESH = 0.1	
+    CONF_THRESH = 0.1 
     NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -146,7 +148,7 @@ def demo(sess, net, image_name):
     #choice = cv2.waitKey(100)
     
     #save result
-    savepath = './data/demo/results_all_cls/' + str(image_name) + '.png'
+    savepath = './data/demo/'+'new'+ str(image_name) 
     plt.savefig(savepath)
 
     plt.draw()
@@ -200,10 +202,11 @@ if __name__ == '__main__':
     print('Loaded network {:s}'.format(tfmodel))
 
     #im_names = ['rgd_0076Cropped320.png','rgd_0095.png','pcd0122r_rgd_preprocessed_1.png','pcd0875r_rgd_preprocessed_1.png','resized_0875_2.png']
-    im_names = ['pcd0100r_rgd_preprocessed_1.png','pcd0266r_rgd_preprocessed_1.png','pcd0882r_rgd_preprocessed_1.png','rgd_0000Cropped320.png']
+    im_names = ['rgd.png']
     for im_name in im_names:
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print('Demo for data/demo/{}'.format(im_name))
         demo(sess, net, im_name)
 
     plt.show()
+
