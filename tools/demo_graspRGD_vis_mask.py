@@ -110,10 +110,9 @@ def demo(sess, net, image_name, mask_name):
     im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
     mask_file = os.path.join(cfg.DATA_DIR, 'demo', mask_name)
     im = cv2.imread(im_file)
-    mask = cv2.imread(mask_file,0)
+    mask = cv2.imread(mask_file)
     #im = im*np.stack([mask,mask,mask], axis=2)
-    im = cv2.bitwise_and(im,im,mask = mask)
-
+    im = cv2.bitwise_and(im,mask,mask = None)
     
     # Detect all object classes and regress object bounds
     timer = Timer()
@@ -131,7 +130,7 @@ def demo(sess, net, image_name, mask_name):
 
     fig, ax = plt.subplots(figsize=(12, 12))
     # Visualize detections for each class
-    CONF_THRESH = 0.1	
+    CONF_THRESH = 0.1   
     NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -151,7 +150,7 @@ def demo(sess, net, image_name, mask_name):
     #choice = cv2.waitKey(100)
     
     #save result
-    savepath = './data/demo/results_all_cls/' + str(image_name) + '.png'
+    savepath = './data/demo/' + str('masked_'+image_name) 
     plt.savefig(savepath)
 
     plt.draw()
@@ -205,7 +204,7 @@ if __name__ == '__main__':
     print('Loaded network {:s}'.format(tfmodel))
 
     #im_names = ['rgd_0076Cropped320.png','rgd_0095.png','pcd0122r_rgd_preprocessed_1.png','pcd0875r_rgd_preprocessed_1.png','resized_0875_2.png']
-    im_names = ['rgd_0000Cropped320.png']
+    im_names = ['rgd1028.png']
     mask_name = 'mask.jpg'
     
     for im_name in im_names:

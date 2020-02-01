@@ -3,7 +3,7 @@ import imageio as i
 import os
 import glob
 
-txt_names = glob.glob(os.path.join('./output12/'+'*.txt')) 
+txt_names = glob.glob(os.path.join('./output/'+'*.txt')) 
 #print(txt_names)
 lines = []
 for t in txt_names:
